@@ -8,8 +8,8 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 
+import com.yunxiweather.android.SettingActivity;
 import com.yunxiweather.android.gson.Weather;
 import com.yunxiweather.android.util.HttpUtil;
 import com.yunxiweather.android.util.Utility;
@@ -25,7 +25,9 @@ import okhttp3.Response;
  */
 
 public class AutoUpdateService extends Service {
-    @Nullable
+
+    private double i = 8;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -36,8 +38,19 @@ public class AutoUpdateService extends Service {
         updateWeather();
         updateBingPic();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour = 8 * 60 * 60 * 1000;//这是8小时的毫秒数
-        long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
+        String flag = SettingActivity.FLAG;
+        if (flag.equals("45分钟")) {
+            i = 0.45;
+        } else if (flag.equals("6小时")) {
+            i = 6;
+        } else if (flag.equals("12小时")) {
+            i = 12;
+        } else if (flag.equals("24小时")) {
+            i = 24;
+        }
+        double anHour = i * 60 * 60 * 1000;//这是8小时的毫秒数
+
+        long triggerAtTime = (long) (SystemClock.elapsedRealtime() + anHour);
         Intent i = new Intent(this, AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
         manager.cancel(pi);
@@ -54,7 +67,6 @@ public class AutoUpdateService extends Service {
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
                 editor.putString("bing_pic", bingPic);
                 editor.apply();
-
             }
 
             @Override

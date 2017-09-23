@@ -50,8 +50,8 @@ public class Notification extends Service {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String responseText = response.body().string();
-                final Weather weather = Utility.handleWeatherResponse(responseText);
+                String responseText = response.body().string();
+                Weather weather = Utility.handleWeatherResponse(responseText);
                 if (weather != null && "ok".equals(weather.status)) {
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Notification.this).edit();
                     editor.putString("weather", responseText);

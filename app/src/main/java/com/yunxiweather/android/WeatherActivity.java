@@ -24,7 +24,9 @@ import com.yunxiweather.android.gson.Forecast;
 import com.yunxiweather.android.gson.Weather;
 import com.yunxiweather.android.service.AutoUpdateService;
 import com.yunxiweather.android.service.Notification;
+import com.yunxiweather.android.util.ConstanValue;
 import com.yunxiweather.android.util.HttpUtil;
+import com.yunxiweather.android.util.SpUtils;
 import com.yunxiweather.android.util.Utility;
 
 import java.io.IOException;
@@ -57,6 +59,7 @@ public class WeatherActivity extends AppCompatActivity {
     private String weatherInfo;
     private String aqi;
     private String pm25;
+    private Button settingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,7 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navButton = (Button) findViewById(R.id.nav_button);
+        settingButton = (Button) findViewById(R.id.setting_button);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = preferences.getString("weather", null);
         navButton.setOnClickListener(new View.OnClickListener() {
@@ -93,33 +97,28 @@ public class WeatherActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+        settingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                startActivity(intent);
+            }
+        });
         if (weatherString != null) {
             //有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
             mWeatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
-//            Intent intent = new Intent(this, Notification.class);
-//            stopService(intent);
-//            intent.putExtra("mWeatherId",mWeatherId);
-//            startService(intent);
         } else {
             //无缓存时去服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
-//            Intent intent = new Intent(this, Notification.class);
-//            stopService(intent);
-//            intent.putExtra("mWeatherId",mWeatherId);
-//            startService(intent);
         }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
-//                Intent intent = new Intent(getApplicationContext(), Notification.class);
-//                stopService(intent);
-//                intent.putExtra("mWeatherId",mWeatherId);
-//                startService(intent);
             }
         });
         String bingPic = preferences.getString("bing_pic",null);
@@ -232,7 +231,11 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        if (SpUtils.getBoolean(this, ConstanValue.OPEN_UPDATE, false)) {
         Intent intent = new Intent(this, AutoUpdateService.class);
         startService(intent);
+        }else {
+
+        }
     }
 }
