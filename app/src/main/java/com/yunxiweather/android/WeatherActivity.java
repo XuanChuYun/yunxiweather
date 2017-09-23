@@ -1,5 +1,6 @@
 package com.yunxiweather.android;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.yunxiweather.android.gson.Forecast;
 import com.yunxiweather.android.gson.Weather;
+import com.yunxiweather.android.service.AutoUpdateService;
+import com.yunxiweather.android.service.Notification;
 import com.yunxiweather.android.util.HttpUtil;
 import com.yunxiweather.android.util.Utility;
 
@@ -32,7 +35,7 @@ import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    private ScrollView weatherLayout;
+    public ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
     private TextView degreeText;
@@ -45,9 +48,15 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView sportText;
     private ImageView bingPicImg;
     public SwipeRefreshLayout swipeRefresh;
-    private String mWeatherId;
+    public String mWeatherId;
     public DrawerLayout drawerLayout;
     private Button navButton;
+    private String cityName;
+    private String updateTime;
+    private String degree;
+    private String weatherInfo;
+    private String aqi;
+    private String pm25;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,16 +98,28 @@ public class WeatherActivity extends AppCompatActivity {
             Weather weather = Utility.handleWeatherResponse(weatherString);
             mWeatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
+            Intent intent = new Intent(this, Notification.class);
+            stopService(intent);
+            intent.putExtra("mWeatherId",mWeatherId);
+            startService(intent);
         } else {
             //无缓存时去服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
+            Intent intent = new Intent(this, Notification.class);
+            stopService(intent);
+            intent.putExtra("mWeatherId",mWeatherId);
+            startService(intent);
         }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
+                Intent intent = new Intent(getApplicationContext(), Notification.class);
+                stopService(intent);
+                intent.putExtra("mWeatherId",mWeatherId);
+                startService(intent);
             }
         });
         String bingPic = preferences.getString("bing_pic",null);
@@ -173,10 +194,10 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void showWeatherInfo(Weather weather) {
-        String cityName = weather.basic.cityName;
-        String updateTime = weather.basic.update.updateTime.split(" ")[1];
-        String degree = weather.now.temperature + "℃";
-        String weatherInfo = weather.now.more.info;
+        cityName = weather.basic.cityName;
+        updateTime = weather.basic.update.updateTime.split(" ")[1];
+        degree = weather.now.temperature + "℃";
+        weatherInfo = weather.now.more.info;
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
@@ -195,8 +216,10 @@ public class WeatherActivity extends AppCompatActivity {
             forecastLayout.addView(view);
         }
         if (weather.aqi != null){
-            aqiText.setText(weather.aqi.city.aqi);
-            pm25Text.setText(weather.aqi.city.pm25);
+            aqi = weather.aqi.city.aqi;
+            pm25 = weather.aqi.city.pm25;
+            aqiText.setText(aqi);
+            pm25Text.setText(pm25);
         }
         String comfort = "舒适度："+weather.suggestion.comfort.info;
         String carWash = "洗车指数：" + weather.suggestion.carWash.info;
@@ -205,5 +228,7 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 }
