@@ -98,28 +98,28 @@ public class WeatherActivity extends AppCompatActivity {
             Weather weather = Utility.handleWeatherResponse(weatherString);
             mWeatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
-            Intent intent = new Intent(this, Notification.class);
-            stopService(intent);
-            intent.putExtra("mWeatherId",mWeatherId);
-            startService(intent);
+//            Intent intent = new Intent(this, Notification.class);
+//            stopService(intent);
+//            intent.putExtra("mWeatherId",mWeatherId);
+//            startService(intent);
         } else {
             //无缓存时去服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
-            Intent intent = new Intent(this, Notification.class);
-            stopService(intent);
-            intent.putExtra("mWeatherId",mWeatherId);
-            startService(intent);
+//            Intent intent = new Intent(this, Notification.class);
+//            stopService(intent);
+//            intent.putExtra("mWeatherId",mWeatherId);
+//            startService(intent);
         }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
-                Intent intent = new Intent(getApplicationContext(), Notification.class);
-                stopService(intent);
-                intent.putExtra("mWeatherId",mWeatherId);
-                startService(intent);
+//                Intent intent = new Intent(getApplicationContext(), Notification.class);
+//                stopService(intent);
+//                intent.putExtra("mWeatherId",mWeatherId);
+//                startService(intent);
             }
         });
         String bingPic = preferences.getString("bing_pic",null);
@@ -156,9 +156,9 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     public void requestWeather(String weatherId) {
-        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=0ebd95b22d994fffab87610eb21121c8";
+        mWeatherId = weatherId;
+        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + mWeatherId + "&key=0ebd95b22d994fffab87610eb21121c8";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responeText = response.body().string();
@@ -202,6 +202,10 @@ public class WeatherActivity extends AppCompatActivity {
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        Intent intent1 = new Intent(getApplicationContext(), Notification.class);
+        stopService(intent1);
+        intent1.putExtra("mWeatherId",mWeatherId);
+        startService(intent1);
         forecastLayout.removeAllViews();
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);

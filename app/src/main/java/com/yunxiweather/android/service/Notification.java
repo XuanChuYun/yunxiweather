@@ -67,7 +67,7 @@ public class Notification extends Service {
     private void showNotification(Weather weather) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(weather.basic.cityName + " " + weather.now.more.info + " " + weather.now.temperature + "℃")
-                .setContentText("AQI：" + weather.aqi.city.aqi + "  &  " + "PM：" + weather.aqi.city.pm25);
+                .setContentText("AQI：" + weather.aqi.city.aqi + "  |  " + "PM：" + weather.aqi.city.pm25);
         String icon = weather.now.more.info;
         switch (icon) {
             case "晴":
