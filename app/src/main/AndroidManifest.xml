@@ -24,6 +24,7 @@
         <activity android:name=".WeatherActivity" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".NotifiSettingActivity"/>
+        <activity android:name=".AboutActivity"/>
 
         <service
             android:name=".service.Notification"

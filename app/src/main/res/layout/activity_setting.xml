@@ -220,6 +220,36 @@
                 android:layout_marginTop="30dp"
                 android:text="更多"
                 android:textColor="#3ecc5d" />
+            <RelativeLayout
+                android:id="@+id/rl_bg5"
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+                <TextView
+                    android:id="@+id/about_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:text="关于手机"
+                    android:textColor="#C8161515" />
+
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:background="@drawable/next_activity" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height=".2dp"
+                    android:background="#96585757"
+                    android:layout_alignParentBottom="true"/>
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
