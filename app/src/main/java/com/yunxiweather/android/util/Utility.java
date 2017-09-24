@@ -2,7 +2,6 @@ package com.yunxiweather.android.util;
 
 import android.text.TextUtils;
 
-
 import com.google.gson.Gson;
 import com.yunxiweather.android.db.City;
 import com.yunxiweather.android.db.County;

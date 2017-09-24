@@ -39,9 +39,7 @@ public class AutoUpdateService extends Service {
         updateBingPic();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         String flag = SettingActivity.FLAG;
-        if (flag.equals("45分钟")) {
-            i = 0.45;
-        } else if (flag.equals("6小时")) {
+        if (flag.equals("6小时")) {
             i = 6;
         } else if (flag.equals("12小时")) {
             i = 12;
@@ -88,7 +86,7 @@ public class AutoUpdateService extends Service {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String responseText = response.body().string();
-                    Weather weather1 = Utility.handleWeatherResponse(responseText);
+                    Weather weather = Utility.handleWeatherResponse(responseText);
                     if (weather != null && "ok".equals(weather.status)) {
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
                         editor.putString("weather", responseText);

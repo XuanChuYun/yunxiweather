@@ -11,12 +11,16 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.app.NotificationCompat;
+import android.view.View;
 import android.widget.Toast;
 
+import com.yunxiweather.android.NotifiSettingActivity;
 import com.yunxiweather.android.R;
 import com.yunxiweather.android.WeatherActivity;
 import com.yunxiweather.android.gson.Weather;
+import com.yunxiweather.android.util.ConstanValue;
 import com.yunxiweather.android.util.HttpUtil;
+import com.yunxiweather.android.util.SpUtils;
 import com.yunxiweather.android.util.Utility;
 
 import java.io.IOException;
@@ -35,8 +39,19 @@ public class Notification extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mWeatherId = intent.getStringExtra("mWeatherId");
-        requestWeather(mWeatherId);
+        if (SpUtils.getBoolean(this, ConstanValue.OPEN_NOTIFICATION, false)) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String weatherString = preferences.getString("weather", null);
+            if (weatherString != null) {
+                //有缓存时直接解析天气数据
+                Weather weather = Utility.handleWeatherResponse(weatherString);
+                showNotification(weather);
+            } else {
+                //无缓存时去服务器查询天气
+                mWeatherId = intent.getStringExtra("mWeatherId");
+                requestWeather(mWeatherId);
+            }
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -65,9 +80,19 @@ public class Notification extends Service {
     }
 
     private void showNotification(Weather weather) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle(weather.basic.cityName + " " + weather.now.more.info + " " + weather.now.temperature + "℃")
-                .setContentText("AQI：" + weather.aqi.city.aqi + "  |  " + "PM：" + weather.aqi.city.pm25);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        String style = NotifiSettingActivity.NTFCT_FLAG;
+        if (style.equals("1")) {
+            mBuilder.setContentTitle(weather.basic.cityName + " " + weather.now.more.info + " " + weather.now.temperature + "℃")
+                    .setContentText("AQI：" + weather.aqi.city.aqi + "  |  " + "PM：" + weather.aqi.city.pm25);
+        } else if (style.equals("2")) {
+            mBuilder.setContentTitle(weather.basic.cityName + " " + weather.now.more.info + " ")
+                    .setContentText(weather.now.temperature + "℃")
+                    .setContentInfo("PM：" + weather.aqi.city.pm25);
+        } else if (style.equals("3")) {
+            mBuilder.setContentTitle(weather.now.more.info + " " + weather.now.temperature + "℃")
+                    .setContentText(weather.basic.cityName);
+        }
         String icon = weather.now.more.info;
         switch (icon) {
             case "晴":

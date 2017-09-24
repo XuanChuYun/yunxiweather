@@ -27,7 +27,11 @@
             android:layout_marginLeft="10dp"
             android:background="@drawable/ic_back" />
     </RelativeLayout>
-
+    <View
+        android:id="@+id/toolbar_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/toolbar_shadow" />
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"

@@ -8,7 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="MyCheckBox">
-        <item name="android:button">@drawable/public_checkbox</item>
+        <item name="android:background">@drawable/public_checkbox</item>
+        <item name="android:button">@null</item>
+
     </style>
 
 </resources>

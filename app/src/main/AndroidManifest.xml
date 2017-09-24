@@ -3,6 +3,8 @@
     package="com.yunxiweather.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name="org.litepal.LitePalApplication"
@@ -18,9 +20,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingActivity" android:label="设置中心"/>
+        <activity android:name=".SettingActivity"/>
         <activity android:name=".WeatherActivity" />
         <activity android:name=".NotificationActivity" />
+        <activity android:name=".NotifiSettingActivity"/>
 
         <service
             android:name=".service.Notification"
